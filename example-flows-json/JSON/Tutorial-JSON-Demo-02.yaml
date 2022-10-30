@@ -1,0 +1,127 @@
+inboundCall:
+  name: DemoJSON-02
+  description: Access a property on a JSON value that contains an object and read it
+  division: Home
+  startUpRef: "/inboundCall/tasks/task[Startup Task_12]"
+  defaultLanguage: en-us
+  supportedLanguages:
+    en-us:
+      defaultLanguageSkill:
+        noValue: true
+      textToSpeech:
+        Google TTS:
+          voice: en-US-Wavenet-D
+  initialGreeting:
+    exp: AudioPlaybackOptions(Append(ToAudioTTS("This flow will show how to use a JSON parse function to set up a customer object from a string.  It will then read back the customer's name and age from that object."), ToAudioBlank(750)), false)
+  variables:
+    - integerVariable:
+        name: Flow.CustomerAge
+        initialValue:
+          noValue: true
+    - jsonVariable:
+        name: Flow.CustomerJson
+        initialValue:
+          noValue: true
+    - stringVariable:
+        name: Flow.CustomerName
+        initialValue:
+          noValue: true
+  settingsActionDefaults:
+    playAudioOnSilence:
+      timeout:
+        lit:
+          seconds: 40
+    detectSilence:
+      timeout:
+        lit:
+          seconds: 40
+    callData:
+      processingPrompt:
+        lit:
+          name: PromptSystem.processing
+    collectInput:
+      noEntryTimeout:
+        lit:
+          seconds: 5
+    dialByExtension:
+      interDigitTimeout:
+        lit:
+          seconds: 6
+    transferToUser:
+      connectTimeout:
+        noValue: true
+    transferToNumber:
+      connectTimeout:
+        noValue: true
+    transferToGroup:
+      connectTimeout:
+        noValue: true
+    transferToFlowSecure:
+      connectTimeout:
+        lit:
+          seconds: 15
+  settingsErrorHandling:
+    errorHandling:
+      disconnect:
+        none: true
+    preHandlingAudio:
+      tts: Sorry, an error occurred. Please try your call again.
+  settingsMenu:
+    extensionDialingMaxDelay:
+      lit:
+        seconds: 1
+    listenForExtensionDialing:
+      lit: true
+    menuSelectionTimeout:
+      lit:
+        seconds: 10
+    repeatCount:
+      lit: 3
+  settingsPrompts:
+    ensureAudioInPrompts: false
+    promptMediaToValidate:
+      - mediaType: audio
+      - mediaType: tts
+  settingsSpeechRec:
+    completeMatchTimeout:
+      lit:
+        ms: 100
+    incompleteMatchTimeout:
+      lit:
+        ms: 1500
+    maxSpeechLengthTimeout:
+      lit:
+        seconds: 20
+    minConfidenceLevel:
+      lit: 50
+    asrCompanyDir: none
+    asrEnabledOnFlow: true
+  tasks:
+    - task:
+        name: Startup Task
+        refId: Startup Task_12
+        actions:
+          - updateData:
+              name: JsonParse to Set Up Info
+              statements:
+                - json:
+                    variable: Flow.CustomerJson
+                    value:
+                      exp: "JsonParse(\"{\n  \\\"firstName\\\": \\\"John\\\",\n  \\\"lastName\\\":  \\\"Doe\\\",\n  \\\"age\\\":       50\n}\")"
+          - updateData:
+              name: Put Name In Variable
+              statements:
+                - string:
+                    variable: Flow.CustomerName
+                    value:
+                      exp: Flow.CustomerJson.firstName
+                - integer:
+                    variable: Flow.CustomerAge
+                    value:
+                      exp: ToInt(Flow.CustomerJson.age)
+          - playAudio:
+              name: Play Back the Name and Age
+              audio:
+                exp: AudioPlaybackOptions(Append(ToAudioTTS("Hello"), ToAudioTTS(Flow.CustomerName), ToAudioBlank(500), ToAudioTTS("You are"), ToAudioTTS(ToString(Flow.CustomerAge)), ToAudioTTS("years old.")), false)
+          - disconnect:
+              name: Disconnect

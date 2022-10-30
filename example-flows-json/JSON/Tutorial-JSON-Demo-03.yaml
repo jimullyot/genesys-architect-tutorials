@@ -1,0 +1,127 @@
+inboundCall:
+  name: DemoJSON-03
+  description: Access a property on a JSON object inside of an array
+  division: Home
+  startUpRef: "/inboundCall/tasks/task[Startup Task_12]"
+  defaultLanguage: en-us
+  supportedLanguages:
+    en-us:
+      defaultLanguageSkill:
+        noValue: true
+      textToSpeech:
+        Google TTS:
+          voice: en-US-Wavenet-D
+  initialGreeting:
+    exp: AudioPlaybackOptions(Append(ToAudioTTS("This flow will add a favorite numbers property to a JSON customer object.  In that array will be the numbers 10, 20 and 30.  The flow will then replace the number 30 in that array with the number 40 using a replace JSON array item function.  It should then read back the updated array with the values 10, 20 and 40."), ToAudioBlank(750)), false)
+  variables:
+    - jsonVariable:
+        name: Flow.CustomerJson
+        initialValue:
+          noValue: true
+  settingsActionDefaults:
+    playAudioOnSilence:
+      timeout:
+        lit:
+          seconds: 40
+    detectSilence:
+      timeout:
+        lit:
+          seconds: 40
+    callData:
+      processingPrompt:
+        lit:
+          name: PromptSystem.processing
+    collectInput:
+      noEntryTimeout:
+        lit:
+          seconds: 5
+    dialByExtension:
+      interDigitTimeout:
+        lit:
+          seconds: 6
+    transferToUser:
+      connectTimeout:
+        noValue: true
+    transferToNumber:
+      connectTimeout:
+        noValue: true
+    transferToGroup:
+      connectTimeout:
+        noValue: true
+    transferToFlowSecure:
+      connectTimeout:
+        lit:
+          seconds: 15
+  settingsErrorHandling:
+    errorHandling:
+      disconnect:
+        none: true
+    preHandlingAudio:
+      tts: Sorry, an error occurred. Please try your call again.
+  settingsMenu:
+    extensionDialingMaxDelay:
+      lit:
+        seconds: 1
+    listenForExtensionDialing:
+      lit: true
+    menuSelectionTimeout:
+      lit:
+        seconds: 10
+    repeatCount:
+      lit: 3
+  settingsPrompts:
+    ensureAudioInPrompts: false
+    promptMediaToValidate:
+      - mediaType: audio
+      - mediaType: tts
+  settingsSpeechRec:
+    completeMatchTimeout:
+      lit:
+        ms: 100
+    incompleteMatchTimeout:
+      lit:
+        ms: 1500
+    maxSpeechLengthTimeout:
+      lit:
+        seconds: 20
+    minConfidenceLevel:
+      lit: 50
+    asrCompanyDir: none
+    asrEnabledOnFlow: true
+  tasks:
+    - task:
+        name: Startup Task
+        refId: Startup Task_12
+        actions:
+          - updateData:
+              name: Set Up Customer Info
+              statements:
+                - json:
+                    variable: Flow.CustomerJson
+                    value:
+                      lit: "{\n  \"firstName\":       \"John\",\n  \"lastName\":        \"Doe\"  \n}"
+                - json:
+                    variable: Flow.CustomerJson
+                    value:
+                      exp: "SetJsonObjectProperty(\n  Flow.CustomerJson, \n  \"favoriteNumbers\", \n  JsonParse(\"[ 10, 20, 30 ]\")\n)"
+          - playAudio:
+              name: Play Audio
+              audio:
+                exp: AudioPlaybackOptions(Append(ToAudioTTS("There are"), ToAudioTTS(ToString(Count(GetJsonObjectPropertyNames(Flow.CustomerJson)))), ToAudioTTS("properties on the customer JSON variable."), ToAudioBlank(500), ToAudioTTS("There are"), ToAudioTTS(ToString(Count(Flow.CustomerJson.favoriteNumbers))), ToAudioTTS("numbers in the JSON array.")), false)
+          - playAudio:
+              name: Play Audio
+              audio:
+                exp: AudioPlaybackOptions(Append(ToAudioTTS("The favorite number array contains these numbers"), ToAudioTTS(ToString(ToJsonCollection(Flow.CustomerJson.favoriteNumbers), ", ")), ToAudioBlank(500)), false)
+          - updateData:
+              name: Update Data
+              statements:
+                - json:
+                    variable: Flow.CustomerJson
+                    value:
+                      exp: "SetJsonObjectProperty(\n  Flow.CustomerJson, \n  \"favoriteNumbers\", \n  ReplaceJsonArrayItem(Flow.CustomerJson.favoriteNumbers, 30, 40)\n)"
+          - playAudio:
+              name: Play Audio
+              audio:
+                exp: AudioPlaybackOptions(Append(ToAudioTTS("After replacing the number 30 with 40 in the favorite number collection, the numbers are now"), ToAudioBlank(500), ToAudioTTS(ToString(ToJsonCollection(Flow.CustomerJson.favoriteNumbers), ", ")), ToAudioBlank(500), ToAudioTTS("Goodbye!")), false)
+          - disconnect:
+              name: Disconnect
