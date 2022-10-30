@@ -4,17 +4,25 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+        client_id:
+          description: 'The Genesys Cloud Oauth client identifier.'
+          required: true
+        client_secret:
+          description: 'The Genesys Cloud OAuth client secret.'
+        aws_region:
+          description: 'The AWS region ( default is dca )'
+          default: 'dca'
 jobs:
  deploy-call-flow:
     runs-on: ubuntu-latest
     env:
-      GENESYSCLOUD_OAUTHCLIENT_ID: ${{ secrets.GENESYSCLOUD_OAUTHCLIENT_ID}}
-      GENESYSCLOUD_OAUTHCLIENT_SECRET: ${{ secrets.GENESYSCLOUD_OAUTHCLIENT_SECRET }}
-      GENESYSCLOUD_API_REGION: "https://login.mypurecloud.com/"
-      GENESYSCLOUD_REGION: "us-east-1"
+      GENESYSCLOUD_OAUTHCLIENT_ID: ${{ inputs.client_id }}
+      GENESYSCLOUD_OAUTHCLIENT_SECRET: ${{ inputs.client_secret }}
+      GENESYSCLOUD_REGION: ${{ inputs.aws_region }}
     steps:
       - uses: actions/checkout@v2
       - uses: hashicorp/setup-terraform@v1
         with:
-          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}  
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
       - uses: ./.github/actions/terraform-action
