@@ -1,0 +1,11 @@
+name: "Invoke Terraform with Auto Apply"
+description: "Invoke Terraform with Auto Apply"
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        cd $GITHUB_WORKSPACE/terraform-main-file
+        terraform init 
+        terraform apply --auto-approve
+        cd $GITHUB_WORKSPACE
+      shell: bash
