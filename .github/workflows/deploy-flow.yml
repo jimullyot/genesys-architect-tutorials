@@ -13,6 +13,9 @@ on:
         aws_region:
           description: 'The AWS region ( default is dca )'
           default: 'dca'
+        student_name:
+          description: 'The name to customize in the examples.',
+          default: 'JohnD'
 jobs:
  deploy-call-flow:
     runs-on: ubuntu-latest
@@ -21,11 +24,8 @@ jobs:
       GENESYSCLOUD_OAUTHCLIENT_SECRET: ${{ inputs.client_secret }}
       GENESYSCLOUD_REGION: ${{ inputs.aws_region }}
     steps:
-      - name: Log Values
-        run: |
-          echo "Region: $GENESYSCLOUD_REGION"
-      #- uses: actions/checkout@v2
-      #- uses: hashicorp/setup-terraform@v1
-      #  with:
-      #    cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-      # - uses: ./.github/actions/terraform-action
+      - uses: actions/checkout@v2
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+      - uses: ./.github/actions/terraform-action
