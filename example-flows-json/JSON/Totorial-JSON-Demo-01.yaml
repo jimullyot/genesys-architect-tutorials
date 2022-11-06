@@ -1,5 +1,5 @@
 inboundCall:
-  name: "{{flow_name}}"
+  name: Tutorial-JSON-Demo-01
   description: Access a property on a JSON value that contains an object and read it
   division: Home
   startUpRef: "/inboundCall/tasks/task[Startup Task_12]"
