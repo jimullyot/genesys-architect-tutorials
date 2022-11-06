@@ -1,1 +1,5 @@
 .idea/
+runIt.sh
+.terraform.lock.hcl
+.terraform/
+terraform.tfstate

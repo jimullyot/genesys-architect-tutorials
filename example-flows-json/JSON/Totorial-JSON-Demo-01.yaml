@@ -1,5 +1,5 @@
 inboundCall:
-  name: DemoJSON-01
+  name: "{{flow_name}}"
   description: Access a property on a JSON value that contains an object and read it
   division: Home
   startUpRef: "/inboundCall/tasks/task[Startup Task_12]"
@@ -12,7 +12,7 @@ inboundCall:
         Google TTS:
           voice: en-US-Wavenet-D
   initialGreeting:
-    exp: AudioPlaybackOptions(Append(ToAudioTTS("This flow will access a customer name property on a json value and read it back."), ToAudioBlank(750)), false)
+    exp: AudioPlaybackOptions(Append(ToAudioTTS("This flow will access a customer name property on a json value and read it back.  The customer name will be your student name."), ToAudioBlank(750)), false)
   variables:
     - jsonVariable:
         name: Flow.CustomerJson
@@ -103,7 +103,7 @@ inboundCall:
                 - json:
                     variable: Flow.CustomerJson
                     value:
-                      lit: "{\n  \"firstName\": \"John\",\n  \"lastName\":  \"Doe\"  \n}"
+                      lit: "{\n  \"firstName\": \"{{student_first_name}}\",\n  \"lastName\":  \"Doe\"  \n}"
           - updateData:
               name: Put Name In Variable
               statements:
