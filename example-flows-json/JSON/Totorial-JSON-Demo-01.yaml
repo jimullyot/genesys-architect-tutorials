@@ -74,7 +74,7 @@ inboundCall:
     repeatCount:
       lit: 3
   settingsPrompts:
-    ensureAudioInPrompts: false
+    # ensureAudioInPrompts: false
     promptMediaToValidate:
       - mediaType: audio
       - mediaType: tts
