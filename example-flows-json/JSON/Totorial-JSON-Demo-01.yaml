@@ -103,7 +103,7 @@ inboundCall:
                 - json:
                     variable: Flow.CustomerJson
                     value:
-                      lit: "{\n  \"firstName\": \"{{student_first_name}}\",\n  \"lastName\":  \"Doe\"  \n}"
+                      lit: "{\n  \"firstName\": \"Jim\",\n  \"lastName\":  \"Doe\"  \n}"
           - updateData:
               name: Put Name In Variable
               statements:
