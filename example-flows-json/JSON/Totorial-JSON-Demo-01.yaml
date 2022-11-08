@@ -12,7 +12,7 @@ inboundCall:
         Genesys TTS:
           voice: Jill
   initialGreeting:
-    exp: AudioPlaybackOptions(Append(ToAudioTTS("This flow will access a customer name property on a json value and read it back.  The customer name will be your student name."), ToAudioBlank(750)), false)
+    exp: AudioPlaybackOptions(Append(ToAudioTTS("This flow will access a customer name property on a module_json value and read it back.  The customer name will be your student name."), ToAudioBlank(750)), false)
   variables:
     - jsonVariable:
         name: Flow.CustomerJson
