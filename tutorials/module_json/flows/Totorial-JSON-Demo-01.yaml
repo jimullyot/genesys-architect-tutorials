@@ -1,5 +1,5 @@
 inboundCall:
-  name: DemoJSON-02
+  name: "{{flow_name}}"
   description: Access a property on a JSON value that contains an object and read it
   division: Home
   startUpRef: "/inboundCall/tasks/task[Startup Task_12]"
@@ -9,15 +9,11 @@ inboundCall:
       defaultLanguageSkill:
         noValue: true
       textToSpeech:
-        Google TTS:
-          voice: en-US-Wavenet-D
+        Genesys TTS:
+          voice: Jill
   initialGreeting:
-    exp: AudioPlaybackOptions(Append(ToAudioTTS("This flow will show how to use a JSON parse function to set up a customer object from a string.  It will then read back the customer's name and age from that object."), ToAudioBlank(750)), false)
+    exp: AudioPlaybackOptions(Append(ToAudioTTS("This flow will access a customer name property on a module_json value and read it back.  The customer name will be your student name."), ToAudioBlank(750)), false)
   variables:
-    - integerVariable:
-        name: Flow.CustomerAge
-        initialValue:
-          noValue: true
     - jsonVariable:
         name: Flow.CustomerJson
         initialValue:
@@ -78,7 +74,7 @@ inboundCall:
     repeatCount:
       lit: 3
   settingsPrompts:
-    ensureAudioInPrompts: false
+    # ensureAudioInPrompts: false
     promptMediaToValidate:
       - mediaType: audio
       - mediaType: tts
@@ -102,12 +98,12 @@ inboundCall:
         refId: Startup Task_12
         actions:
           - updateData:
-              name: JsonParse to Set Up Info
+              name: Set Up Customer Info
               statements:
                 - json:
                     variable: Flow.CustomerJson
                     value:
-                      exp: "JsonParse(\"{\n  \\\"firstName\\\": \\\"John\\\",\n  \\\"lastName\\\":  \\\"Doe\\\",\n  \\\"age\\\":       50\n}\")"
+                      lit: "{\n  \"firstName\": \"{{student_first_name}}\",\n  \"lastName\":  \"Doe\"  \n}"
           - updateData:
               name: Put Name In Variable
               statements:
@@ -115,13 +111,20 @@ inboundCall:
                     variable: Flow.CustomerName
                     value:
                       exp: Flow.CustomerJson.firstName
-                - integer:
-                    variable: Flow.CustomerAge
-                    value:
-                      exp: ToInt(Flow.CustomerJson.age)
           - playAudio:
-              name: Play Back the Name and Age
+              name: Play Back the Name
               audio:
-                exp: AudioPlaybackOptions(Append(ToAudioTTS("Hello"), ToAudioTTS(Flow.CustomerName), ToAudioBlank(500), ToAudioTTS("You are"), ToAudioTTS(ToString(Flow.CustomerAge)), ToAudioTTS("years old.")), false)
+                exp: AudioPlaybackOptions(Append(ToAudioTTS("Hello"), ToAudioTTS(Flow.CustomerName)), false)
+          - decision:
+              name: Is this a JSON object that is contained in Flow.CustomerJSON
+              condition:
+                exp: IsJsonObject(Flow.CustomerJson)
+              outputs:
+                "yes":
+                  actions:
+                    - playAudio:
+                        name: Play Audio
+                        audio:
+                          tts: Yes, the flow customer JSON variable contains a JSON object
           - disconnect:
               name: Disconnect

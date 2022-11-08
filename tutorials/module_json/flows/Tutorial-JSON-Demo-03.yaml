@@ -1,6 +1,6 @@
 inboundCall:
   name: "{{flow_name}}"
-  description: Access a property on a JSON value that contains an object and read it
+  description: Access a property on a JSON object inside of an array
   division: Home
   startUpRef: "/inboundCall/tasks/task[Startup Task_12]"
   defaultLanguage: en-us
@@ -12,14 +12,10 @@ inboundCall:
         Genesys TTS:
           voice: Jill
   initialGreeting:
-    exp: AudioPlaybackOptions(Append(ToAudioTTS("This flow will access a customer name property on a module_json value and read it back.  The customer name will be your student name."), ToAudioBlank(750)), false)
+    exp: AudioPlaybackOptions(Append(ToAudioTTS("This flow will add a favorite numbers property to a JSON customer object.  In that array will be the numbers 10, 20 and 30.  The flow will then replace the number 30 in that array with the number 40 using a replace JSON array item function.  It should then read back the updated array with the values 10, 20 and 40."), ToAudioBlank(750)), false)
   variables:
     - jsonVariable:
         name: Flow.CustomerJson
-        initialValue:
-          noValue: true
-    - stringVariable:
-        name: Flow.CustomerName
         initialValue:
           noValue: true
   settingsActionDefaults:
@@ -74,7 +70,7 @@ inboundCall:
     repeatCount:
       lit: 3
   settingsPrompts:
-    # ensureAudioInPrompts: false
+    ensureAudioInPrompts: false
     promptMediaToValidate:
       - mediaType: audio
       - mediaType: tts
@@ -103,28 +99,29 @@ inboundCall:
                 - json:
                     variable: Flow.CustomerJson
                     value:
-                      lit: "{\n  \"firstName\": \"Jim\",\n  \"lastName\":  \"Doe\"  \n}"
-          - updateData:
-              name: Put Name In Variable
-              statements:
-                - string:
-                    variable: Flow.CustomerName
+                      lit: "{\n  \"firstName\":       \"{{student_first_name}}\",\n  \"lastName\":        \"Doe\"  \n}"
+                - json:
+                    variable: Flow.CustomerJson
                     value:
-                      exp: Flow.CustomerJson.firstName
+                      exp: "SetJsonObjectProperty(\n  Flow.CustomerJson, \n  \"favoriteNumbers\", \n  JsonParse(\"[ 10, 20, 30 ]\")\n)"
           - playAudio:
-              name: Play Back the Name
+              name: Play Audio
               audio:
-                exp: AudioPlaybackOptions(Append(ToAudioTTS("Hello"), ToAudioTTS(Flow.CustomerName)), false)
-          - decision:
-              name: Is this a JSON object that is contained in Flow.CustomerJSON
-              condition:
-                exp: IsJsonObject(Flow.CustomerJson)
-              outputs:
-                "yes":
-                  actions:
-                    - playAudio:
-                        name: Play Audio
-                        audio:
-                          tts: Yes, the flow customer JSON variable contains a JSON object
+                exp: AudioPlaybackOptions(Append(ToAudioTTS("There are"), ToAudioTTS(ToString(Count(GetJsonObjectPropertyNames(Flow.CustomerJson)))), ToAudioTTS("properties on the customer JSON variable."), ToAudioBlank(500), ToAudioTTS("There are"), ToAudioTTS(ToString(Count(Flow.CustomerJson.favoriteNumbers))), ToAudioTTS("numbers in the JSON array.")), false)
+          - playAudio:
+              name: Play Audio
+              audio:
+                exp: AudioPlaybackOptions(Append(ToAudioTTS("The favorite number array contains these numbers"), ToAudioTTS(ToString(ToJsonCollection(Flow.CustomerJson.favoriteNumbers), ", ")), ToAudioBlank(500)), false)
+          - updateData:
+              name: Update Data
+              statements:
+                - json:
+                    variable: Flow.CustomerJson
+                    value:
+                      exp: "SetJsonObjectProperty(\n  Flow.CustomerJson, \n  \"favoriteNumbers\", \n  ReplaceJsonArrayItem(Flow.CustomerJson.favoriteNumbers, 30, 40)\n)"
+          - playAudio:
+              name: Play Audio
+              audio:
+                exp: AudioPlaybackOptions(Append(ToAudioTTS("After replacing the number 30 with 40 in the favorite number collection, the numbers are now"), ToAudioBlank(500), ToAudioTTS(ToString(ToJsonCollection(Flow.CustomerJson.favoriteNumbers), ", ")), ToAudioBlank(500), ToAudioTTS("Goodbye!")), false)
           - disconnect:
               name: Disconnect
