@@ -1,6 +1,7 @@
 .idea/
 runIt.sh
 .terraform.lock.hcl
+.terraform.tfstate.lock.info
 .terraform/
 terraform.tfstate
 terraform.tfstate.backup
