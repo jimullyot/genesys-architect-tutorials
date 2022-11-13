@@ -11,7 +11,8 @@ inboundCall:
       textToSpeech:
         Google TTS:
           voice: en-US-Neural2-D
-  initialGreeting: null
+  initialGreeting:
+    exp: ToAudio(NOT_SET)
   variables:
     - stringVariable:
         name: Flow.StudentFirstName
@@ -111,7 +112,7 @@ inboundCall:
               intent:
                 noValue: true
               botFlow:
-                {{ssml_tutorial_bot_flow_name}}:
+                "{{ssml_tutorial_bot_flow_name}}":
                   ver_latestPublished:
                     inputs:
                       Flow.StudentFirstName:
