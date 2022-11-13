@@ -33,7 +33,7 @@ provider "genesyscloud" {
 }
 
 resource "genesyscloud_flow" "Genesys-Tutorial-SSML-Demo-Bot-01" {
-  filepath = "https://raw.githubusercontent.com/jimullyot/genesys-architect-tutorials/main/tutorials/module_ssml/flows/Genesys-Tutorial-SSML-Demo-Bot-01.yaml"
+  filepath = "https://raw.githubusercontent.com/jimullyot/genesys-architect-tutorials/main/tutorials/module_ssml/Genesys-Tutorial-SSML-Demo-Bot-01.yaml"
   file_content_hash = "53ee7551b71b020bcc62ae54ebbe008874291412"
   substitutions = {
     flow_name          = join("", ["Genesys-Tutorial-", var.studentFirstName, "-SSML-Demo-Bot-01"])
@@ -42,7 +42,7 @@ resource "genesyscloud_flow" "Genesys-Tutorial-SSML-Demo-Bot-01" {
 }
 
 resource "genesyscloud_flow" "Genesys-Tutorial-SSML-Demo-01" {
-  filepath = "https://raw.githubusercontent.com/jimullyot/genesys-architect-tutorials/main/tutorials/module_ssml/flows/Genesys-Tutorial-SSML-Demo-01.yaml"
+  filepath = "https://raw.githubusercontent.com/jimullyot/genesys-architect-tutorials/main/tutorials/module_ssml/Genesys-Tutorial-SSML-Demo-01.yaml"
   file_content_hash = "ae7812cadb7c7593a3fb2809792a9f338e870ca4"
   substitutions = {
     flow_name                   = join("", ["Genesys-Tutorial-", var.studentFirstName, "-SSML-Demo-01"])
