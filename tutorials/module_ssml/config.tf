@@ -48,7 +48,7 @@ resource "genesyscloud_flow" "Genesys-Tutorial-SSML-Demo-01" {
     genesyscloud_flow.Genesys-Tutorial-SSML-Demo-Bot-01
   ]
   filepath = "https://raw.githubusercontent.com/jimullyot/genesys-architect-tutorials/main/tutorials/module_ssml/flows/Genesys-Tutorial-SSML-Demo-01.yaml"
-  file_content_hash = "2c93b12bc2f55aacff4228aa9caa81d54bba8041"
+  file_content_hash = "90cd535d23540cfb8575edd43f4e05c48a26480c"
   substitutions = {
     flow_name                   = join("", ["Genesys-Tutorial-", var.studentFirstName, "-SSML-Demo-01"])
     ssml_tutorial_bot_flow_name = join("", ["Genesys-Tutorial-", var.studentFirstName, "-SSML-Demo-Bot-01"])

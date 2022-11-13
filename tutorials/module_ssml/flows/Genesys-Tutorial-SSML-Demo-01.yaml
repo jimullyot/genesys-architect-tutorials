@@ -1,5 +1,5 @@
 inboundCall:
-  name: Genesys-Tutorial-Demo-SSML-01
+  name: "{{flow_name}}"
   description: An inbound call flow that will call a bot flow to show SSML handling.
   division: Home
   startUpRef: "/inboundCall/tasks/task[Initial Task_12]"
