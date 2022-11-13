@@ -1,0 +1,120 @@
+inboundCall:
+  name: Genesys-Tutorial-Demo-SSML-01
+  description: An inbound call flow that will call a bot flow to show SSML handling.
+  division: Home
+  startUpRef: "/inboundCall/tasks/task[Initial Task_12]"
+  defaultLanguage: en-us
+  supportedLanguages:
+    en-us:
+      defaultLanguageSkill:
+        noValue: true
+      textToSpeech:
+        Google TTS:
+          voice: en-US-Neural2-D
+  initialGreeting: null
+  variables:
+    - stringVariable:
+        name: Flow.StudentFirstName
+        initialValue:
+          noValue: true
+  settingsActionDefaults:
+    playAudioOnSilence:
+      timeout:
+        lit:
+          seconds: 40
+    detectSilence:
+      timeout:
+        lit:
+          seconds: 40
+    callData:
+      processingPrompt:
+        noValue: true
+    collectInput:
+      noEntryTimeout:
+        lit:
+          seconds: 5
+    dialByExtension:
+      interDigitTimeout:
+        lit:
+          seconds: 6
+    transferToUser:
+      connectTimeout:
+        noValue: true
+    transferToNumber:
+      connectTimeout:
+        noValue: true
+    transferToGroup:
+      connectTimeout:
+        noValue: true
+    transferToFlowSecure:
+      connectTimeout:
+        lit:
+          seconds: 15
+  settingsErrorHandling:
+    errorHandling:
+      disconnect:
+        none: true
+    preHandlingAudio:
+      tts: Sorry, an error occurred. Please try your call again.
+  settingsMenu:
+    extensionDialingMaxDelay:
+      lit:
+        seconds: 1
+    listenForExtensionDialing:
+      lit: true
+    menuSelectionTimeout:
+      lit:
+        seconds: 10
+    repeatCount:
+      lit: 3
+  settingsPrompts:
+    ensureAudioInPrompts: false
+    promptMediaToValidate:
+      - mediaType: audio
+      - mediaType: tts
+  settingsSpeechRec:
+    completeMatchTimeout:
+      lit:
+        ms: 100
+    incompleteMatchTimeout:
+      lit:
+        ms: 1500
+    maxSpeechLengthTimeout:
+      lit:
+        seconds: 20
+    minConfidenceLevel:
+      lit: 50
+    asrCompanyDir: none
+    asrEnabledOnFlow: true
+  tasks:
+    - task:
+        name: Initial Task
+        refId: Initial Task_12
+        actions:
+          - updateData:
+              name: Set up Student First Name
+              statements:
+                - string:
+                    variable: Flow.StudentFirstName
+                    value:
+                      lit: "{{student_first_name}}"
+          - playAudio:
+              name: Welcome to SSML Demo
+              audio:
+                exp: AudioPlaybackOptions(Append(ToAudioTTS("Hello"), ToAudioTTS(Flow.StudentFirstName), ToAudioTTS(", welcome to the speech synthesis markup language demonstration flow."), ToAudioBlank(750), ToAudioTTS("Now calling the SSML bot flow.")), false)
+          - callBotFlow:
+              name: Call SSML Demo Bot Flow
+              inputText:
+                noValue: true
+              exitReason:
+                noValue: true
+              intent:
+                noValue: true
+              botFlow:
+                {{ssml_tutorial_bot_flow_name}}:
+                  ver_latestPublished:
+                    inputs:
+                      Flow.StudentFirstName:
+                        exp: Flow.StudentFirstName
+          - disconnect:
+              name: Bye!

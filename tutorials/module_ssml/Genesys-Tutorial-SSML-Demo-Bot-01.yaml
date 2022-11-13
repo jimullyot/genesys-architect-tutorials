@@ -1,0 +1,152 @@
+botFlow:
+  name: "{{flow_name}}"
+  description: This bot flow will read back the student name on a call.
+  division: Home
+  startUpRef: "/botFlow/bots/bot[Default Bot_10]"
+  defaultLanguage: en-us
+  supportedLanguages:
+    en-us:
+      defaultLanguageSkill:
+        noValue: true
+  variables:
+    - stringVariable:
+        name: Flow.StudentFirstName
+        description: The student's first name.
+        initialValue:
+          noValue: true
+        isInput: true
+        isOutput: false
+  settingsActionDefaults:
+    askForIntent:
+      voiceEndOfInputTimeout:
+        lit:
+          seconds: 1
+    askForBoolean:
+      voiceEndOfInputTimeout:
+        lit:
+          seconds: 1
+    askForSlot:
+      voiceEndOfInputTimeout:
+        lit:
+          seconds: 1
+    loopAnythingElse:
+      voiceEndOfInputTimeout:
+        lit:
+          seconds: 1
+    transferToUser:
+      connectTimeout:
+        noValue: true
+    transferToGroup:
+      connectTimeout:
+        noValue: true
+  settingsErrorHandling:
+    errorHandling:
+      exit:
+        none: true
+    enableAgentEscalation:
+      lit: true
+    errorEventHandover:
+      exp: "MakeCommunication(\n  \"Sorry, an error occurred. One moment, please, while I put you through to someone who can help.\")"
+    agentEscalationConfirmation:
+      exp: "MakeCommunication(\n  \"You want to speak to an advisor. Is that correct?\")"
+    agentEscalationHandover:
+      exp: "MakeCommunication(\n  \"One moment, please, and I will put you through to someone.\")"
+    recognitionFailureEventHandover:
+      exp: "MakeCommunication(\n  \"Sorry, I'm having trouble understanding you. One moment, please, while I put you through to someone who can help.\")"
+    recognitionFailureEventHandling:
+      exit:
+        none: true
+  settingsPrompts:
+    ensureAudioInPrompts: false
+    promptMediaToValidate:
+      - mediaType: audio
+      - mediaType: tts
+  tasks:
+    - task:
+        name: Check Inputs
+        refId: Check Inputs_18
+        actions:
+          - decision:
+              name: Did we get a student name?
+              condition:
+                exp: "!IsNotSetOrEmpty(Flow.StudentFirstName)"
+              outputs:
+                "no":
+                  actions:
+                    - updateData:
+                        name: "Set student name of '{{student_first_name}}'"
+                        statements:
+                          - string:
+                              variable: Flow.StudentFirstName
+                              value:
+                                lit: "{{student_first_name}}"
+                    - communicate:
+                        name: Let participant know default being used
+                        communication:
+                          exp: "MakeCommunication(\n  \"Setting the student name to {{student_first_name}} since no name was passed in by the caller.\", \n  ToCommunicationBlank(750))"
+          - endTask:
+              name: End Task
+              outputPath:
+                name: Default
+  settingsBotFlow:
+    none: true
+  settingsUserInput:
+    enableBargeIn:
+      lit: true
+    enableAutomaticQuickReplies:
+      lit: true
+    noMatchesMax:
+      lit: 3
+    noInputsMax:
+      lit: 3
+    noInputsTimeout:
+      lit:
+        seconds: 7
+    confirmationRejectionsMax:
+      lit: 3
+    collectionLowConfidenceThreshold:
+      lit: 20
+    collectionHighConfidenceThreshold:
+      lit: 70
+    confirmationLowConfidenceThreshold:
+      lit: 40
+    noMatchApology:
+      exp: "MakeCommunication(\n  \"Sorry.\")"
+    noInputApology:
+      exp: "MakeCommunication(\n  \"Sorry, I didn't hear you.\")"
+    noToConfirmationApology:
+      exp: "MakeCommunication(\n  \"My mistake.\")"
+    confirmationNoMatchApology:
+      exp: "MakeCommunication(\n  \"Sorry, please say yes or no.\")"
+    confirmationNoInputApology:
+      exp: "MakeCommunication(\n  \"Sorry, I didn't hear you.  Please say yes or no.\")"
+  settingsKnowledge:
+    none: true
+  bots:
+    - bot:
+        name: Default Bot
+        refId: Default Bot_10
+        actions:
+          - callTask:
+              name: Check Inputs to Flow
+              targetTaskRef: "/botFlow/tasks/task[Check Inputs_18]"
+          - communicate:
+              name: Say Hello
+              communication:
+                exp: "MakeCommunication(\n  \"Hello\", \n  ToCommunication(Flow.StudentFirstName), \n  ToCommunicationBlank(750))"
+          - communicate:
+              name: Spell the name
+              communication:
+                exp: "MakeCommunication(\n  \"Your name is spelled\", \n  ToCommunicationSsml(Append(\"<speak><say-as interpret-as=\\\"characters\\\">\", Flow.StudentFirstName, \"</say-as></speak>\")), \n  ToCommunicationBlank(500))"
+          - communicate:
+              name: Communicate
+              communication:
+                exp: "MakeCommunication(\n  \"Goodbye!\")"
+          - exitBotFlow:
+              name: Exit Bot Flow
+  settingsNaturalLanguageUnderstanding:
+    nluDomainVersion:
+      intents: []
+      entities: []
+      entityTypes: []
+      language: en
