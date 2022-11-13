@@ -1,6 +1,6 @@
 botFlow:
   name: "{{flow_name}}"
-  description: This bot flow will read back the student name on a call.
+  description: This bot flow will read back a student's name as characters using SSML.  Please use the Genesys-Tutorial-SSML-Demo-01 inbound call flow to try this out as it will call this bot flow.
   division: Home
   startUpRef: "/botFlow/bots/bot[Default Bot_10]"
   defaultLanguage: en-us
